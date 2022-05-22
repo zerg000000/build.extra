@@ -50,6 +50,10 @@
                      (create-fake-deps-project "artifacts/schedule-job-c" ['libs/common])]]
       (exec-create-project project repo-root))
     (spit (fs/file repo-root ".gitignore") "**/.cpcache/\n")
+    (b/git-process {:git-args ["config" "user.email" "you@example.com"]
+                    :dir (str repo-root)})
+    (b/git-process {:git-args ["config" "user.name" "Your Name"]
+                    :dir (str repo-root)})
     (b/git-process {:git-args ["init"]
                     :dir (str repo-root)})
     (b/git-process {:git-args ["add" "."]
