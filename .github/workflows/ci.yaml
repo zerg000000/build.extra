@@ -19,7 +19,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: ${{ env.JAVA_VERSION }}
+          java-version: 17
       - uses: DeLaGuardo/setup-clojure@5.1
         with:
           cli: 1.11.1.1113
