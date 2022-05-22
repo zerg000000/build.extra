@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        id: cache
+        with:
+          path: ~/.m2/
+          key: deps-v1-${{ hashFiles('**/deps.edn') }}
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: ${{ env.JAVA_VERSION }}
+      - uses: DeLaGuardo/setup-clojure@5.1
+        with:
+          cli: 1.11.1.1113
+      - name: Test
+        working-directory: mono
+        run: clojure -X:test

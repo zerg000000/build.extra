@@ -1,10 +1,10 @@
 (ns mono.alpha.api
   "Extra tasks for project diff"
   (:require
-   [clojure.pprint :as pp]
-   [clojure.string :as string]
-   [clojure.tools.build.api :as b]
-   [babashka.fs :as fs]))
+    [babashka.fs :as fs]
+    [clojure.pprint :as pp]
+    [clojure.string :as string]
+    [clojure.tools.build.api :as b]))
 
 
 (set! *warn-on-reflection* true)
@@ -28,7 +28,8 @@
 (def ^:dynamic *repo-root* (git-root))
 
 
-(defn set-repo-root! [root]
+(defn set-repo-root!
+  [root]
   (alter-var-root #'*repo-root* (constantly root)))
 
 
@@ -95,6 +96,12 @@
                                   :dir (canonical-path *repo-root*)})
                   (string/split-lines))]
      (take n tags))))
+
+
+(defn current-sha
+  "Get HEAD sha"
+  []
+  (b/git-process {:git-args ["rev-parse" "HEAD"]}))
 
 
 (defn all-deps-edn
