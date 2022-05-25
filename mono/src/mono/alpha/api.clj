@@ -90,7 +90,7 @@
 
 (defn last-tags
   "Get last n tags order by committerdate desc"
-  ([pattern] (last-tags pattern "2"))
+  ([pattern] (last-tags pattern 2))
   ([pattern n]
    (let [tags (-> (b/git-process {:git-args ["tag" "--sort=-creatordate" "--list" pattern]
                                   :dir (canonical-path *repo-root*)})
