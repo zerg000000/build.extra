@@ -180,4 +180,14 @@
       (b/set-project-root! (str git-root "/artifacts/schedule-job-c"))
       (is (= 0 (count (mono/deps-changes {:changes (mono/changed-files "v0.0.5" "v0.0.6")
                                           :deps (mono/deps {:basis (b/create-basis
-                                                                     {})})})))))))
+                                                                     {})})})))))
+    
+    (testing "changed-files should provide list of changed files by git diff"
+      (is (= nil
+             (mono/changed-files "v0.0.5" "v0.0.5")))
+      (is (= 1
+             (count (mono/changed-files "v0.0.1" "v0.0.2"))))
+      (is (= 1
+             (count (mono/changed-files "v0.0.2" "v0.0.3"))))
+      (is (= 1
+             (count (mono/changed-files "v0.0.4" "v0.0.5")))))))

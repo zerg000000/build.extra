@@ -56,12 +56,12 @@
 (defn changed-files
   "List all changed files between commit1 and commit2"
   [commit1 commit2]
-  (let [diffs (->> (b/git-process {:git-args (cond-> ["diff" "--name-only"]
-                                               commit1 (conj commit1)
-                                               commit2 (conj commit2))
-                                   :dir (canonical-path *repo-root*)})
-                   (string/split-lines)
-                   (map (partial canonical-path *repo-root*)))]
+  (let [diffs (some->> (b/git-process {:git-args (cond-> ["diff" "--name-only"]
+                                                   commit1 (conj commit1)
+                                                   commit2 (conj commit2))
+                                       :dir (canonical-path *repo-root*)})
+                       (string/split-lines)
+                       (map (partial canonical-path *repo-root*)))]
     diffs))
 
 
