@@ -111,11 +111,16 @@
        (map canonical-path)))
 
 
-(defn print-config
-  [& {:keys [*repo-root*] :as config}]
-  (pp/print-table [:key :value] (map (fn [[k v]] {:key k :value v})
-                                     (-> config
-                                         (update :project (fn [f] (string/replace (fs/canonicalize "." f) *repo-root* "")))))))
+(defn info
+  []
+  {:repo-root (canonical-path *repo-root*)
+   :project (str (fs/relativize (canonical-path *repo-root*) (fs/canonicalize b/*project-root*)))})
+
+
+(defn print-kv
+  "Print key value as table"
+  [m cols]
+  (pp/print-table cols (map (partial zipmap cols) m)))
 
 
 (defn print-changes

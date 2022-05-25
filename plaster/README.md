@@ -1,12 +1,11 @@
-# Mono
+# Plaster
 
-A library for dealing with git repository that have multiple `:local/root` deps. Sort of poor man monorepo toolkit.
-
+A task to copy all jars and git libs into a folder
 
 ```clojure
-{build.extra/mono {:git/url "https://github.com/zerg000000/build.extra.git" 
-                   :sha "{{replace with commit hash}}" 
-                   :deps/root "mono"}}
+{build.extra/plaster {:git/url "https://github.com/zerg000000/build.extra.git" 
+                      :sha "{{replace with commit hash}}" 
+                      :deps/root "plaster"}}
 ```
 
 ## Getting Started
