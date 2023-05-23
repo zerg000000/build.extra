@@ -1,5 +1,5 @@
 {:paths ["src"]
- :deps {io.github.clojure/tools.build {:git/tag "v0.8.2" :git/sha "ba1a2bf"}
+ :deps {io.github.clojure/tools.build {:mvn/version "0.9.4"}
         babashka/fs {:mvn/version "0.1.6"}}
  :aliases
 {:test {:extra-deps {lambdaisland/kaocha {:mvn/version "1.66.1034"}}

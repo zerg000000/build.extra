@@ -4,6 +4,7 @@
     [clojure.string :as string]
     [clojure.test :refer [deftest testing is]]
     [clojure.tools.build.api :as b]
+    [mono.alpha.git :as git]
     [mono.alpha.api :as mono]))
 
 
@@ -101,93 +102,114 @@
 (deftest mono-test
   (let [git-root (setup-test-repo)]
     (testing "utils should be work as expected"
-      (is (not= git-root mono/*repo-root*))
-      (mono/set-repo-root! git-root)
-      (is (= git-root mono/*repo-root*) "should equal to git-root after set-repo-root!")
+      (is (not= git-root git/*repo-root*))
+      (git/set-repo-root! git-root)
+      (is (= git-root git/*repo-root*) "should equal to git-root after set-repo-root!")
       (is (= ["v0.0.6" "v0.0.5" "v0.0.4" "v0.0.3" "v0.0.2" "v0.0.1"]
-             (mono/last-tags "v*" 10))
+             (git/last-tags "v*" 10))
           "should return v0.0.6..v0.0.1"))
     (testing "all artifacts rebuilt, when common deps is changed"
 
       (b/set-project-root! (str git-root "/artifacts/service-a"))
-      (is (= 1 (count (mono/deps-changes {:changes (mono/changed-files "v0.0.1" "v0.0.2")
+      (is (= 1 (count (mono/deps-changes {:changes (git/changed-files "v0.0.1" "v0.0.2")
                                           :deps (mono/deps {:basis (b/create-basis
                                                                      {})})}))))
       (b/set-project-root! (str git-root "/artifacts/service-b"))
-      (is (= 1 (count (mono/deps-changes {:changes (mono/changed-files "v0.0.1" "v0.0.2")
+      (is (= 1 (count (mono/deps-changes {:changes (git/changed-files "v0.0.1" "v0.0.2")
                                           :deps (mono/deps {:basis (b/create-basis
                                                                      {})})}))))
       (b/set-project-root! (str git-root "/artifacts/schedule-job-c"))
-      (is (= 1 (count (mono/deps-changes {:changes (mono/changed-files "v0.0.1" "v0.0.2")
+      (is (= 1 (count (mono/deps-changes {:changes (git/changed-files "v0.0.1" "v0.0.2")
                                           :deps (mono/deps {:basis (b/create-basis
                                                                      {})})})))))
 
     (testing "service-a rebuilt, when web deps is changed"
 
       (b/set-project-root! (str git-root "/artifacts/service-a"))
-      (is (= 1 (count (mono/deps-changes {:changes (mono/changed-files "v0.0.2" "v0.0.3")
+      (is (= 1 (count (mono/deps-changes {:changes (git/changed-files "v0.0.2" "v0.0.3")
                                           :deps (mono/deps {:basis (b/create-basis
                                                                      {})})}))))
       (b/set-project-root! (str git-root "/artifacts/service-b"))
-      (is (= 0 (count (mono/deps-changes {:changes (mono/changed-files "v0.0.2" "v0.0.3")
+      (is (= 0 (count (mono/deps-changes {:changes (git/changed-files "v0.0.2" "v0.0.3")
                                           :deps (mono/deps {:basis (b/create-basis
                                                                      {})})}))))
       (b/set-project-root! (str git-root "/artifacts/schedule-job-c"))
-      (is (= 0 (count (mono/deps-changes {:changes (mono/changed-files "v0.0.2" "v0.0.3")
+      (is (= 0 (count (mono/deps-changes {:changes (git/changed-files "v0.0.2" "v0.0.3")
                                           :deps (mono/deps {:basis (b/create-basis
                                                                      {})})})))))
 
     (testing "schedule-job-c rebuilt, when schedule-job-c source is changed"
 
       (b/set-project-root! (str git-root "/artifacts/service-a"))
-      (is (= 0 (count (mono/deps-changes {:changes (mono/changed-files "v0.0.3" "v0.0.4")
+      (is (= 0 (count (mono/deps-changes {:changes (git/changed-files "v0.0.3" "v0.0.4")
                                           :deps (mono/deps {:basis (b/create-basis
                                                                      {})})}))))
       (b/set-project-root! (str git-root "/artifacts/service-b"))
-      (is (= 0 (count (mono/deps-changes {:changes (mono/changed-files "v0.0.3" "v0.0.4")
+      (is (= 0 (count (mono/deps-changes {:changes (git/changed-files "v0.0.3" "v0.0.4")
                                           :deps (mono/deps {:basis (b/create-basis
                                                                      {})})}))))
       (b/set-project-root! (str git-root "/artifacts/schedule-job-c"))
-      (is (= 1 (count (mono/deps-changes {:changes (mono/changed-files "v0.0.3" "v0.0.4")
+      (is (= 1 (count (mono/deps-changes {:changes (git/changed-files "v0.0.3" "v0.0.4")
                                           :deps (mono/deps {:basis (b/create-basis
                                                                      {})})})))))
 
     (testing "schedule-job-c rebuilt, when new deps email is added to schedule-job-c"
 
       (b/set-project-root! (str git-root "/artifacts/service-a"))
-      (is (= 0 (count (mono/deps-changes {:changes (mono/changed-files "v0.0.4" "v0.0.5")
+      (is (= 0 (count (mono/deps-changes {:changes (git/changed-files "v0.0.4" "v0.0.5")
                                           :deps (mono/deps {:basis (b/create-basis
                                                                      {})})}))))
       (b/set-project-root! (str git-root "/artifacts/service-b"))
-      (is (= 0 (count (mono/deps-changes {:changes (mono/changed-files "v0.0.4" "v0.0.5")
+      (is (= 0 (count (mono/deps-changes {:changes (git/changed-files "v0.0.4" "v0.0.5")
                                           :deps (mono/deps {:basis (b/create-basis
                                                                      {})})}))))
       (b/set-project-root! (str git-root "/artifacts/schedule-job-c"))
-      (is (= 1 (count (mono/deps-changes {:changes (mono/changed-files "v0.0.4" "v0.0.5")
+      (is (= 1 (count (mono/deps-changes {:changes (git/changed-files "v0.0.4" "v0.0.5")
                                           :deps (mono/deps {:basis (b/create-basis
                                                                      {})})})))))
 
     (testing "service-b rebuilt, when service-b's deps.edn is changed"
 
       (b/set-project-root! (str git-root "/artifacts/service-a"))
-      (is (= 0 (count (mono/deps-changes {:changes (mono/changed-files "v0.0.5" "v0.0.6")
+      (is (= 0 (count (mono/deps-changes {:changes (git/changed-files "v0.0.5" "v0.0.6")
                                           :deps (mono/deps {:basis (b/create-basis
                                                                      {})})}))))
       (b/set-project-root! (str git-root "/artifacts/service-b"))
-      (is (= 1 (count (mono/deps-changes {:changes (mono/changed-files "v0.0.5" "v0.0.6")
+      (is (= 1 (count (mono/deps-changes {:changes (git/changed-files "v0.0.5" "v0.0.6")
                                           :deps (mono/deps {:basis (b/create-basis
                                                                      {})})}))))
       (b/set-project-root! (str git-root "/artifacts/schedule-job-c"))
-      (is (= 0 (count (mono/deps-changes {:changes (mono/changed-files "v0.0.5" "v0.0.6")
+      (is (= 0 (count (mono/deps-changes {:changes (git/changed-files "v0.0.5" "v0.0.6")
                                           :deps (mono/deps {:basis (b/create-basis
                                                                      {})})})))))
     
     (testing "changed-files should provide list of changed files by git diff"
       (is (= nil
-             (mono/changed-files "v0.0.5" "v0.0.5")))
+             (git/changed-files "v0.0.5" "v0.0.5")))
       (is (= 1
-             (count (mono/changed-files "v0.0.1" "v0.0.2"))))
+             (count (git/changed-files "v0.0.1" "v0.0.2"))))
       (is (= 1
-             (count (mono/changed-files "v0.0.2" "v0.0.3"))))
+             (count (git/changed-files "v0.0.2" "v0.0.3"))))
       (is (= 1
-             (count (mono/changed-files "v0.0.4" "v0.0.5")))))))
+             (count (git/changed-files "v0.0.4" "v0.0.5")))))
+    
+    (testing "changes should be detected"
+      (b/set-project-root! (str git-root "/artifacts/service-a"))
+      #_(is (= ""
+             (mono/changes?
+              (fs/path "deps.edn")
+              {:related? #(= (fs/file-name %) "deps.edn")
+               :changed? (constantly true)})))
+      (let [basis (b/create-basis {})
+            related? (fn [p]
+                       (let [ps (->> (mono/deps {:basis basis})
+                                     (mapcat :paths))]
+                         (some
+                          #(fs/starts-with? p %)
+                          ps)))]
+        #_(is (= [] (related? "deps.edn"))) 
+        (is (some #(mono/changes?
+                    %
+                    {:related? related?
+                     :changed? (constantly true)})
+                  (git/changed-files "v0.0.1" "v0.0.5")))))))
